@@ -236,12 +236,12 @@ public class uiUserEdit extends javax.swing.JFrame {
             int numYear = 0;
             try{
                 numYear = Integer.parseInt(uiYear);
-                UserAcctInterface newAcct = FBOSClient.FBOSServer.createAccount(UserName, uiPass1, uiProf, uiCity, uiComp, uiColl, numYear);
-                if(newAcct == null) {
+                FBOSClient.userAccount = FBOSClient.FBOSServer.createAccount(UserName, uiPass1, uiProf, uiCity, uiComp, uiColl, numYear);
+                if(FBOSClient.userAccount == null) {
                     uiFailLab.setText("Failed to create account");
                 }
                 else {
-                    uiWall newUserFrame = new uiWall(newAcct);
+                    uiWall newUserFrame = new uiWall();
                     newUserFrame.setVisible(true);
                     this.dispose();
                 }

@@ -4,6 +4,15 @@
  */
 package fbos.clientpkg;
 
+import fbos.UserAcctInterface;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
+
 /**
  *
  * @author User
@@ -15,7 +24,33 @@ public class uiSearch extends javax.swing.JFrame {
      */
     public uiSearch() {
         initComponents();
+        uSearchListJL.setModel(new DefaultListModel());
+        try {
+            ArrayList accts = FBOSClient.FBOSServer.searchForFriends(null, null, null);
+            for(int i = 0; i < accts.size(); i++){
+                UserAcctInterface currAcct = (UserAcctInterface) accts.get(i);
+                Map profileInfo = currAcct.viewProfile();
+                String userName = (String) profileInfo.get("userName");
+                ((DefaultListModel)uSearchListJL.getModel()).addElement(userName); 
+            }
+        } catch (RemoteException ex) {
+            Logger.getLogger(uiSearch.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        uiReqListJL.setModel(new DefaultListModel());
+        try {
+            ArrayList myReqs = FBOSClient.userAccount.getRequests();
+            for(int i = 0; i < myReqs.size(); i++) {
+                UserAcctInterface currAcct = (UserAcctInterface) myReqs.get(i);
+                Map profileInfo = currAcct.viewProfile();
+                String userName = (String) profileInfo.get("userName");
+                ((DefaultListModel)uiReqListJL.getModel()).addElement(userName); 
+            }
+        } catch (RemoteException ex) {
+            Logger.getLogger(uiSearch.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -31,15 +66,19 @@ public class uiSearch extends javax.swing.JFrame {
         uiSearchTF = new javax.swing.JTextField();
         uiCityButt = new javax.swing.JButton();
         uiCollButt = new javax.swing.JButton();
-        uiInviteLab = new javax.swing.JLabel();
-        uiInviteLKab2 = new javax.swing.JLabel();
-        uiInviteTF = new javax.swing.JTextField();
         uiInviteButt = new javax.swing.JButton();
         uiExitButt = new javax.swing.JButton();
+        uiAllButt = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        uSearchListJL = new javax.swing.JList();
+        jSeparator1 = new javax.swing.JSeparator();
+        uiResLab = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        uiNextButt = new javax.swing.JButton();
-        uiPrevButt = new javax.swing.JButton();
+        uiReqListJL = new javax.swing.JList();
+        uiReqLab = new javax.swing.JLabel();
+        uiAcceptButt = new javax.swing.JButton();
+        uiAcceptLab = new javax.swing.JLabel();
+        uiInviteLab = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -67,14 +106,6 @@ public class uiSearch extends javax.swing.JFrame {
             }
         });
 
-        uiInviteLab.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        uiInviteLab.setText("Invite to be a friend");
-
-        uiInviteLKab2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        uiInviteLKab2.setText("Enter User Name to be invited as a friend");
-
-        uiInviteTF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-
         uiInviteButt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         uiInviteButt.setText("Invite");
         uiInviteButt.addActionListener(new java.awt.event.ActionListener() {
@@ -85,16 +116,51 @@ public class uiSearch extends javax.swing.JFrame {
 
         uiExitButt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         uiExitButt.setText("Exit Search Page");
+        uiExitButt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uiExitButtActionPerformed(evt);
+            }
+        });
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        uiAllButt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        uiAllButt.setText("Search For All");
+        uiAllButt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uiAllButtActionPerformed(evt);
+            }
+        });
 
-        uiNextButt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        uiNextButt.setText("Next Page");
+        uSearchListJL.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane2.setViewportView(uSearchListJL);
 
-        uiPrevButt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        uiPrevButt.setText("Previous Page");
+        uiResLab.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        uiResLab.setText("Results:");
+
+        uiReqListJL.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(uiReqListJL);
+
+        uiReqLab.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        uiReqLab.setText("Requests:");
+
+        uiAcceptButt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        uiAcceptButt.setText("Accept");
+        uiAcceptButt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uiAcceptButtActionPerformed(evt);
+            }
+        });
+
+        uiAcceptLab.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        uiInviteLab.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout uiSearchPanLayout = new javax.swing.GroupLayout(uiSearchPan);
         uiSearchPan.setLayout(uiSearchPanLayout);
@@ -103,73 +169,97 @@ public class uiSearch extends javax.swing.JFrame {
             .addGroup(uiSearchPanLayout.createSequentialGroup()
                 .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(uiSearchPanLayout.createSequentialGroup()
-                        .addGap(59, 59, 59)
-                        .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(uiInviteButt)
-                            .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(uiInviteLKab2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(uiInviteTF))))
-                    .addGroup(uiSearchPanLayout.createSequentialGroup()
                         .addGap(29, 29, 29)
-                        .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(uiInviteLab)
-                            .addComponent(uiExitButt)
-                            .addComponent(uiSerLab)
+                        .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(uiSearchPanLayout.createSequentialGroup()
-                                .addComponent(uiCityButt, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(uiCollButt))
-                            .addComponent(uiSearchTF))))
-                .addGap(17, 17, 17)
-                .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(uiInviteButt)
+                                .addGap(18, 18, 18)
+                                .addComponent(uiInviteLab, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(uiSearchPanLayout.createSequentialGroup()
+                                .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(uiSerLab)
+                                    .addGroup(uiSearchPanLayout.createSequentialGroup()
+                                        .addComponent(uiCityButt, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(26, 26, 26)
+                                        .addComponent(uiCollButt))
+                                    .addComponent(uiSearchTF, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(uiAllButt, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(uiResLab)))))
                     .addGroup(uiSearchPanLayout.createSequentialGroup()
-                        .addComponent(uiNextButt, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(uiPrevButt))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 517, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(41, Short.MAX_VALUE))
+                        .addContainerGap()
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 622, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, uiSearchPanLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(uiExitButt)
+                    .addComponent(uiAcceptButt))
+                .addGap(18, 18, 18)
+                .addComponent(uiAcceptLab, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(uiReqLab)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(41, 41, 41))
         );
         uiSearchPanLayout.setVerticalGroup(
             uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(uiSearchPanLayout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(uiSerLab)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(uiSearchTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(uiCityButt)
-                    .addComponent(uiCollButt))
-                .addGap(47, 47, 47)
-                .addComponent(uiInviteLab)
+                .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(uiSearchPanLayout.createSequentialGroup()
+                        .addComponent(uiResLab)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(uiSearchPanLayout.createSequentialGroup()
+                        .addGap(9, 9, 9)
+                        .addComponent(uiSerLab)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(uiSearchTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(uiCityButt)
+                            .addComponent(uiCollButt))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(uiAllButt)
+                        .addGap(18, 18, 18)
+                        .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(uiInviteButt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(uiInviteLab, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(18, 18, 18)
-                .addComponent(uiInviteLKab2, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(uiInviteTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(uiInviteButt)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(uiExitButt)
-                .addGap(68, 68, 68))
-            .addGroup(uiSearchPanLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 369, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(uiPrevButt)
-                    .addComponent(uiNextButt))
-                .addContainerGap(33, Short.MAX_VALUE))
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(uiSearchPanLayout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(uiReqLab)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, uiSearchPanLayout.createSequentialGroup()
+                        .addGap(71, 71, 71)
+                        .addGroup(uiSearchPanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(uiAcceptLab, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(uiAcceptButt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(uiExitButt)))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(uiSearchPan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(uiSearchPan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(uiSearchPan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(uiSearchPan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -178,23 +268,100 @@ public class uiSearch extends javax.swing.JFrame {
     private void uiCityButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uiCityButtActionPerformed
         String uiCity;
         uiCity = uiSearchTF.getText();
-        
+        uSearchListJL.setModel(new DefaultListModel());
+        try {
+            ArrayList accts = FBOSClient.FBOSServer.searchForFriends(null, uiCity, null);
+            for(int i = 0; i < accts.size(); i++){
+                UserAcctInterface currAcct = (UserAcctInterface) accts.get(i);
+                Map profileInfo = currAcct.viewProfile();
+                String userName = (String) profileInfo.get("userName");
+                ((DefaultListModel)uSearchListJL.getModel()).addElement(userName); 
+            }
+            
+        } catch (RemoteException ex) {
+            Logger.getLogger(uiSearch.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }//GEN-LAST:event_uiCityButtActionPerformed
 
     private void uiCollButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uiCollButtActionPerformed
         String uiColl;
         uiColl = uiSearchTF.getText();
-        
+        uSearchListJL.setModel(new DefaultListModel());
+        try {
+            ArrayList accts = FBOSClient.FBOSServer.searchForFriends(uiColl, null, null);
+            for(int i = 0; i < accts.size(); i++){
+                UserAcctInterface currAcct = (UserAcctInterface) accts.get(i);
+                Map profileInfo = currAcct.viewProfile();
+                String userName = (String) profileInfo.get("userName");
+                ((DefaultListModel)uSearchListJL.getModel()).addElement(userName); 
+            }
+        } catch (RemoteException ex) {
+            Logger.getLogger(uiSearch.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }//GEN-LAST:event_uiCollButtActionPerformed
 
     private void uiInviteButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uiInviteButtActionPerformed
-        String uiInvite;
-        uiInvite = uiInviteTF.getText();
-        
-        
+        Object[] friendNames = uSearchListJL.getSelectedValues();
+        for(int i = 0; i < friendNames.length; i++) {
+            try {
+                
+                ArrayList accts = FBOSClient.FBOSServer.searchForFriends(null, null, (String)friendNames[i]);
+                UserAcctInterface currAcct = (UserAcctInterface) accts.get(0);
+                if( FBOSClient.FBOSServer.inviteFriend(FBOSClient.userAccount, currAcct) == 1){
+                    uiInviteLab.setText("Friends Invited");
+                }
+                else {
+                    uiInviteLab.setText("Friend Invite Failed");                    
+                }
+                
+            } catch (RemoteException ex) {
+                Logger.getLogger(uiSearch.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }//GEN-LAST:event_uiInviteButtActionPerformed
+
+    private void uiAllButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uiAllButtActionPerformed
+        uSearchListJL.setModel(new DefaultListModel());
+        try {
+            ArrayList accts = FBOSClient.FBOSServer.searchForFriends(null, null, null);
+            for(int i = 0; i < accts.size(); i++){
+                UserAcctInterface currAcct = (UserAcctInterface) accts.get(i);
+                Map profileInfo = currAcct.viewProfile();
+                String userName = (String) profileInfo.get("userName");
+                ((DefaultListModel)uSearchListJL.getModel()).addElement(userName); 
+            }
+        } catch (RemoteException ex) {
+            Logger.getLogger(uiSearch.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_uiAllButtActionPerformed
+
+    private void uiAcceptButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uiAcceptButtActionPerformed
+        // TODO add your handling code here:
+        Object[] friendNames = uiReqListJL.getSelectedValues();
+        int numSuccess = 0;
+        for(int i = 0; i < friendNames.length; i++) {
+            try {
+                ArrayList accts = FBOSClient.FBOSServer.searchForFriends(null, null, (String)friendNames[i]);
+                UserAcctInterface currAcct = (UserAcctInterface) accts.get(0);
+                if(FBOSClient.userAccount.approveFriend(currAcct, true) == 1){
+                    numSuccess++;
+                    ((DefaultListModel)uiReqListJL.getModel()).removeElement(friendNames[i]);
+                }
+                
+            } catch (RemoteException ex) {
+                Logger.getLogger(uiSearch.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_uiAcceptButtActionPerformed
+
+    private void uiExitButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uiExitButtActionPerformed
+        // TODO add your handling code here:
+        JFrame newUserFrame = new uiWall();
+        newUserFrame.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_uiExitButtActionPerformed
 
     /**
      * @param args the command line arguments
@@ -239,16 +406,20 @@ public class uiSearch extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JList uSearchListJL;
+    private javax.swing.JButton uiAcceptButt;
+    private javax.swing.JLabel uiAcceptLab;
+    private javax.swing.JButton uiAllButt;
     private javax.swing.JButton uiCityButt;
     private javax.swing.JButton uiCollButt;
     private javax.swing.JButton uiExitButt;
     private javax.swing.JButton uiInviteButt;
-    private javax.swing.JLabel uiInviteLKab2;
     private javax.swing.JLabel uiInviteLab;
-    private javax.swing.JTextField uiInviteTF;
-    private javax.swing.JButton uiNextButt;
-    private javax.swing.JButton uiPrevButt;
+    private javax.swing.JLabel uiReqLab;
+    private javax.swing.JList uiReqListJL;
+    private javax.swing.JLabel uiResLab;
     private javax.swing.JPanel uiSearchPan;
     private javax.swing.JTextField uiSearchTF;
     private javax.swing.JLabel uiSerLab;

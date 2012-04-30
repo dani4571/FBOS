@@ -155,11 +155,11 @@ public class UserAcct extends java.rmi.server.UnicastRemoteObject implements Use
             return 0;
         }
         if(myRequests.contains(requester)) {
-            myFriends.add(requester);
-            String userName = (String) requester.viewProfile().get("userName");
+            myRequests.remove(requester);
+            String userName = (String) profileInfo.get("userName");
             try {
                 UserAcctInterface safeAcct = (UserAcctInterface)(registry.lookup(userName+"-NOPASS"));
-                if(requester.approve(safeAcct, true) != 1) {
+                if(requester.beenApproved(safeAcct, true) != 1) {
                     return 0;
                 }
             } 
@@ -187,12 +187,13 @@ public class UserAcct extends java.rmi.server.UnicastRemoteObject implements Use
     }
     
     @Override 
-    public synchronized int approve(UserAcctInterface friend, boolean isFirst) throws RemoteException
+    public synchronized int beenApproved(UserAcctInterface friend, boolean isFirst) throws RemoteException
     {
         if(sentRequests.contains(friend)) {
             myFriends.add(friend);
+            sentRequests.remove(friend);
             if(isFirst) {
-                mySisterAcct.approve(friend, false);
+                mySisterAcct.beenApproved(friend, false);
             }
         }
         return 1;

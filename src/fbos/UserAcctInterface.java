@@ -24,6 +24,6 @@ public interface UserAcctInterface extends Remote
     public abstract ArrayList<UserAcctInterface> getRequests() throws RemoteException;
     public abstract int approveFriend(UserAcctInterface requester, boolean isFirst) throws RemoteException;
     public abstract int sentReq(UserAcctInterface friend, boolean isFirst) throws RemoteException;
-    public abstract int approve(UserAcctInterface friend, boolean isFirst) throws RemoteException;
+    public abstract int beenApproved(UserAcctInterface friend, boolean isFirst) throws RemoteException;
     public abstract ArrayList<UserAcctInterface> getFriends() throws RemoteException;
 }

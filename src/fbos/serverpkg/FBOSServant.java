@@ -97,7 +97,7 @@ public class FBOSServant extends java.rmi.server.UnicastRemoteObject implements 
     }
     
     @Override
-    public synchronized ArrayList<UserAcctInterface> searchForFriends(String college, String company) throws RemoteException
+    public synchronized ArrayList<UserAcctInterface> searchForFriends(String college, String company, String userName) throws RemoteException
     {
         String[] objList = acctRegistry.list();
         ArrayList<String> userList = new ArrayList<String>();
@@ -113,13 +113,17 @@ public class FBOSServant extends java.rmi.server.UnicastRemoteObject implements 
                 Map currProfileInfo = currAcct.viewProfile();
                 String currCompany = (String) currProfileInfo.get("company");
                 String currCollege = (String) currProfileInfo.get("college");
+                String currUserName = (String) currProfileInfo.get("userName");
                 if (company != null && currCompany.equals(company)) {
                     userObjList.add(currAcct);
                 }
                 else if (college != null && currCollege.equals(college)) {
                     userObjList.add(currAcct);
                 }
-                else if(college == null && company == null) {
+                else if (userName != null && currUserName.equals(userName)) {
+                    userObjList.add(currAcct);
+                }
+                else if(college == null && company == null && userName == null) {
                     userObjList.add(currAcct);
                 }
             } catch (Exception ex) {

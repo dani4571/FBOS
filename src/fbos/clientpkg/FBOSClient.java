@@ -17,13 +17,14 @@ public class FBOSClient
 {
     static Registry registry;
     static FBOSServantInterface FBOSServer;
+    static UserAcctInterface userAccount;
+    static UserAcctInterface subjectAccount;
     public static JFrame uiLog, uiNewAccount, uiSearch, uiUserEdit, uiWall;
     
     public static void main(String args[]) 
     {
 
         uiLog = new uiLog ();
-//        uiLog.setDisposed(false);
         uiLog.setVisible(true);
     }    
 }

@@ -6,8 +6,11 @@ package fbos.clientpkg;
 
 import fbos.FBOSServantInterface;
 import fbos.UserAcctInterface;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /**
@@ -21,6 +24,12 @@ public class uiLog extends javax.swing.JFrame {
      */
     public uiLog() {
         initComponents();
+        if(FBOSClient.FBOSServer == null) {
+            uiConnStatLab.setText("Not Connected"); 
+        }
+        else {
+            uiConnStatLab.setText("Connected to Server"); 
+        }
     }
 
     /**
@@ -47,6 +56,7 @@ public class uiLog extends javax.swing.JFrame {
         uiExitLab = new javax.swing.JLabel();
         uiPWField = new javax.swing.JPasswordField();
         uiConnStatLab = new javax.swing.JLabel();
+        uiLoginFailLab = new javax.swing.JLabel();
 
         uiLogLab.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         uiLogLab.setText("User Login");
@@ -121,6 +131,8 @@ public class uiLog extends javax.swing.JFrame {
         uiConnStatLab.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         uiConnStatLab.setText("Not Connected");
 
+        uiLoginFailLab.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -145,14 +157,19 @@ public class uiLog extends javax.swing.JFrame {
                                         .addComponent(uiExitButt, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(uiLogLab))
                                 .addGap(23, 23, 23)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(uiIPAddButt)
-                                    .addComponent(uiIPAddTF, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
-                                    .addComponent(uiNameTF, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
-                                    .addComponent(uiLogButt)
-                                    .addComponent(uiPWField))
-                                .addGap(18, 18, 18)
-                                .addComponent(uiConnStatLab, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(uiIPAddButt)
+                                            .addComponent(uiIPAddTF, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+                                            .addComponent(uiNameTF, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+                                            .addComponent(uiPWField))
+                                        .addGap(18, 18, 18)
+                                        .addComponent(uiConnStatLab, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(uiLogButt)
+                                        .addGap(34, 34, 34)
+                                        .addComponent(uiLoginFailLab, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
                 .addContainerGap(374, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -176,7 +193,11 @@ public class uiLog extends javax.swing.JFrame {
                     .addComponent(uiPassLab, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(uiPWField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(uiLogButt)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(uiLogButt)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(uiLoginFailLab, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(4, 4, 4)))
                 .addGap(28, 28, 28)
                 .addComponent(uiNewLab)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -214,7 +235,20 @@ public class uiLog extends javax.swing.JFrame {
         String uiName, uiPWord;
         uiName = uiNameTF.getText();
         uiPWord = uiPWField.getText();
-    //    JFrame Wall= new JFrame ("uiWall");
+        try {
+            FBOSClient.userAccount = FBOSClient.FBOSServer.loginAccount(uiName, uiPWord);
+            if(FBOSClient.userAccount == null) {
+                uiLoginFailLab.setText("Login Fail");
+            } else {
+                JFrame newUserFrame = new uiWall();
+                newUserFrame.setVisible(true);
+                this.dispose();
+            }
+            //JFrame Wall= new JFrame ("uiWall");
+        } catch (RemoteException ex) {
+            Logger.getLogger(uiLog.class.getName()).log(Level.SEVERE, null, ex);
+            uiLoginFailLab.setText("Login Fail");
+        }
         
     }//GEN-LAST:event_uiLogButtActionPerformed
 
@@ -312,6 +346,7 @@ public class uiLog extends javax.swing.JFrame {
     private javax.swing.JTextField uiIPAddTF;
     private javax.swing.JButton uiLogButt;
     private javax.swing.JLabel uiLogLab;
+    private javax.swing.JLabel uiLoginFailLab;
     private javax.swing.JLabel uiNameLab;
     private javax.swing.JTextField uiNameTF;
     private javax.swing.JLabel uiNewLab;

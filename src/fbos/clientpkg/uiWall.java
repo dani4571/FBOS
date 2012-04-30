@@ -10,67 +10,65 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  *
  * @author Robin
  */
+
+
 public class uiWall extends javax.swing.JFrame {
     static UserAcctInterface myAccount;
     int numUpdate, numFriends;
+    class MyListSelectionListener implements ListSelectionListener {
+    // This method is called each time the user changes the set of selected items
+    public void valueChanged(ListSelectionEvent evt) {
+        // When the user release the mouse button and completes the selection,
+        // getValueIsAdjusting() becomes false
+        if (!evt.getValueIsAdjusting()) {
+            JList list = (JList)evt.getSource();
+
+            // Get all selected items
+            String selected = (String)list.getSelectedValue();
+            uiWall1TA.setText(selected);
+        }
+    }
+}
     /**
      * Creates new form uiWall
      */
-    public uiWall(UserAcctInterface thisAccount) {
+    public uiWall() {
         initComponents();
-        myAccount = thisAccount;
+        myAccount = FBOSClient.userAccount;
+        uiFriendsJL.setModel(new DefaultListModel());
         try {
-            numUpdate = 0;
-            ArrayList myUpdates = myAccount.getUpdates();
-            
-            JTextArea[] uiWallTAs = {uiWall1TA, uiWall2TA, uiWall3TA, uiWall4TA, uiWall5TA};
-            int updateSize = myUpdates.size();
-            int loopMaxUpdates = 5;
-            
-            
-            if(updateSize < loopMaxUpdates)
-                loopMaxUpdates = updateSize;
-            for(int i = 0; i < loopMaxUpdates; i++) {
-                uiWallTAs[i].setText((String)myUpdates.get(numUpdate+i));
+            ArrayList accts = FBOSClient.userAccount.getFriends();
+            System.out.println(accts.size());
+            for(int i = 0; i < accts.size(); i++){
+                UserAcctInterface currAcct = (UserAcctInterface) accts.get(i);
+                Map profileInfo = currAcct.viewProfile();
+                String userName = (String) profileInfo.get("userName");
+                ((DefaultListModel)uiFriendsJL.getModel()).addElement(userName); 
             }
-            for(int i = loopMaxUpdates; i < 5; i++) {
-                uiWallTAs[i].setText("");
-            }
-            
-            JTextField[] uiFriendTFs = {uiFri1TF, uiFri2TF, uiFri3TF, uiFri4TF, uiFri5TF, uiFri6TF, uiFri7TF, uiFri8TF, uiFri9TF, uiFri10TF};
-            ArrayList myFriends = myAccount.getFriends();
-            String[] friendNames = new String[10];
-            numFriends = 0;
-            int loopMaxFriends = 10;
-            int friendSize = myFriends.size();
-            if(friendSize < loopMaxFriends)
-                loopMaxFriends = friendSize;
-            
-            
-            for (int i = 0; i<loopMaxFriends; i++){
-                UserAcctInterface friendAcct = (UserAcctInterface) myFriends.get(numFriends+i);
-                Map friendInfo = friendAcct.viewProfile();
-                String friendName = (String) friendInfo.get("userName");
-                friendNames[i] = friendName;
-            }
-            for(int i = loopMaxFriends; i < 10; i++) {
-                friendNames[i] = "";
-            }
-            
-            for(int i = 0; i < 10; i++) {
-                uiFriendTFs[i].setText(friendNames[i]);
-            }
-            
         } catch (RemoteException ex) {
-            Logger.getLogger(uiWall.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(uiSearch.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        uiPostJL.setModel(new DefaultListModel());
+        if(myAccount != null) {
+            try {
+                numUpdate = 0;
+                ArrayList myUpdates = myAccount.getUpdates();
+                for(int i = 0; i < myUpdates.size(); i++) {
+                    ((DefaultListModel)uiPostJL.getModel()).addElement(myUpdates.get(i)); 
+                }
+                uiPostJL.addListSelectionListener(new MyListSelectionListener());
+
+            } catch (RemoteException ex) {
+                Logger.getLogger(uiWall.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -83,82 +81,21 @@ public class uiWall extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        uiFri1TF = new javax.swing.JTextField();
-        uiFri2TF = new javax.swing.JTextField();
-        uiFri3TF = new javax.swing.JTextField();
-        uiFri4TF = new javax.swing.JTextField();
-        uiFri5TF = new javax.swing.JTextField();
-        uiFri6TF = new javax.swing.JTextField();
-        uiFri7TF = new javax.swing.JTextField();
-        uiFri8TF = new javax.swing.JTextField();
-        uiFri9TF = new javax.swing.JTextField();
-        uiFri10TF = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         uiFriLab = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         uiWall1TA = new javax.swing.JTextArea();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        uiWall2TA = new javax.swing.JTextArea();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        uiWall3TA = new javax.swing.JTextArea();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        uiWall4TA = new javax.swing.JTextArea();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        uiWall5TA = new javax.swing.JTextArea();
-        uiFri1Butt = new javax.swing.JButton();
-        uiFri2Butt = new javax.swing.JButton();
-        uiFri3Butt = new javax.swing.JButton();
-        uiFri4Butt = new javax.swing.JButton();
-        uiFri5Butt = new javax.swing.JButton();
-        uiFri6Butt = new javax.swing.JButton();
-        uiFri7Butt = new javax.swing.JButton();
-        uiFri8Butt = new javax.swing.JButton();
-        uiFri9Butt = new javax.swing.JButton();
-        uiFri10Butt = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        uiPrevWallButt = new javax.swing.JButton();
-        uiNextWallButt = new javax.swing.JButton();
         uiWallLab = new javax.swing.JLabel();
         uiWallProfButt = new javax.swing.JButton();
         uiWallSearchButt = new javax.swing.JButton();
         uiWallLogOutButt = new javax.swing.JButton();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        uiPostJL = new javax.swing.JList();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        uiFriendsJL = new javax.swing.JList();
+        uiWallUpdateButt = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        uiFri1TF.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        uiFri1TF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                uiFri1TFActionPerformed(evt);
-            }
-        });
-
-        uiFri2TF.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        uiFri3TF.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        uiFri4TF.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        uiFri5TF.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        uiFri6TF.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        uiFri7TF.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        uiFri8TF.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        uiFri9TF.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        uiFri10TF.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        jButton1.setText("Previous");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        jButton2.setText("Next");
 
         uiFriLab.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         uiFriLab.setText("List of Friends");
@@ -167,72 +104,7 @@ public class uiWall extends javax.swing.JFrame {
         uiWall1TA.setRows(5);
         jScrollPane1.setViewportView(uiWall1TA);
 
-        uiWall2TA.setColumns(20);
-        uiWall2TA.setRows(5);
-        jScrollPane2.setViewportView(uiWall2TA);
-
-        uiWall3TA.setColumns(20);
-        uiWall3TA.setRows(5);
-        jScrollPane3.setViewportView(uiWall3TA);
-
-        uiWall4TA.setColumns(20);
-        uiWall4TA.setRows(5);
-        jScrollPane4.setViewportView(uiWall4TA);
-
-        uiWall5TA.setColumns(20);
-        uiWall5TA.setRows(5);
-        jScrollPane5.setViewportView(uiWall5TA);
-
-        uiFri1Butt.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        uiFri1Butt.setText("1");
-        uiFri1Butt.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                uiFri1ButtActionPerformed(evt);
-            }
-        });
-
-        uiFri2Butt.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        uiFri2Butt.setText("2");
-
-        uiFri3Butt.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        uiFri3Butt.setText("3");
-
-        uiFri4Butt.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        uiFri4Butt.setText("4");
-
-        uiFri5Butt.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        uiFri5Butt.setText("5");
-
-        uiFri6Butt.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        uiFri6Butt.setText("6");
-
-        uiFri7Butt.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        uiFri7Butt.setText("7");
-
-        uiFri8Butt.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        uiFri8Butt.setText("8");
-
-        uiFri9Butt.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        uiFri9Butt.setText("9");
-
-        uiFri10Butt.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        uiFri10Butt.setText("10");
-
         jLabel1.setText("Post on Friends Wall");
-
-        uiPrevWallButt.setText("Previous");
-        uiPrevWallButt.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                uiPrevWallButtActionPerformed(evt);
-            }
-        });
-
-        uiNextWallButt.setText("Next");
-        uiNextWallButt.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                uiNextWallButtActionPerformed(evt);
-            }
-        });
 
         uiWallLab.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         uiWallLab.setText("WALL");
@@ -247,6 +119,11 @@ public class uiWall extends javax.swing.JFrame {
 
         uiWallSearchButt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         uiWallSearchButt.setText("SEARCH FOR A FRIEND");
+        uiWallSearchButt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uiWallSearchButtActionPerformed(evt);
+            }
+        });
 
         uiWallLogOutButt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         uiWallLogOutButt.setText("LOG OUT");
@@ -256,81 +133,54 @@ public class uiWall extends javax.swing.JFrame {
             }
         });
 
+        uiPostJL.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane6.setViewportView(uiPostJL);
+
+        uiFriendsJL.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane2.setViewportView(uiFriendsJL);
+
+        uiWallUpdateButt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        uiWallUpdateButt.setText("Write On Wall");
+        uiWallUpdateButt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uiWallUpdateButtActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(uiWallProfButt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(uiWallSearchButt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(uiWallLogOutButt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(uiWallLab)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 431, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 431, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 431, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 431, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 431, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(uiPrevWallButt)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(uiNextWallButt, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(20, 20, 20)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addComponent(jButton1)
-                            .addGap(18, 18, 18)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(uiFri2Butt, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(uiFri2TF, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(uiFri3Butt, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(uiFri3TF, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(uiFri4Butt, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(uiFri4TF, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(uiFri5Butt, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(uiFri5TF, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(uiFri6Butt, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(uiFri6TF, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(uiFri7Butt, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(uiFri7TF, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(uiFri8Butt, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(uiFri8TF, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(uiFri9Butt, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(uiFri9TF, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(uiFri10Butt)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(uiFri10TF, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 431, Short.MAX_VALUE)
+                    .addComponent(jScrollPane6))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(uiFri1Butt, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1))
+                        .addGap(20, 20, 20)
+                        .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(uiFriLab))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(65, 65, 65)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(uiFriLab)
-                            .addComponent(uiFri1TF, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(26, 26, 26))
+                            .addComponent(uiWallUpdateButt, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -339,171 +189,58 @@ public class uiWall extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(uiFriLab)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(5, 5, 5)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(uiFri1TF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(uiFri1Butt))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(uiFri2TF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(uiFri2Butt))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(uiFri3TF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(uiFri3Butt))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(uiFri4TF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(uiFri4Butt))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(uiFri5TF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(uiFri5Butt))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(uiFri6TF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(uiFri6Butt))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(uiFri7TF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(uiFri7Butt))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(uiFri8TF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(uiFri8Butt))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(uiFri9TF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(uiFri9Butt))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(uiFri10TF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(uiFri10Butt))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton1))
-                .addContainerGap())
+                .addComponent(jScrollPane2)
+                .addGap(18, 18, 18)
+                .addComponent(uiWallUpdateButt)
+                .addGap(72, 72, 72))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(uiWallLab)
                 .addGap(11, 11, 11)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(uiWallProfButt)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(uiWallSearchButt)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(uiWallLogOutButt))
+                        .addComponent(uiWallLogOutButt)
+                        .addGap(379, 379, 379))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(uiNextWallButt)
-                            .addComponent(uiPrevWallButt))))
-                .addGap(63, 63, 63))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane6)
+                        .addGap(108, 108, 108))))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void uiFri1TFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uiFri1TFActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_uiFri1TFActionPerformed
-
     private void uiWallProfButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uiWallProfButtActionPerformed
         JFrame newUserFrame = new uiUserEdit();
-        this.setVisible(false);
         newUserFrame.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_uiWallProfButtActionPerformed
 
     private void uiWallLogOutButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uiWallLogOutButtActionPerformed
         JFrame newUserFrame = new uiLog();
-        this.setVisible(false);
         newUserFrame.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_uiWallLogOutButtActionPerformed
 
-    private void uiFri1ButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uiFri1ButtActionPerformed
+    private void uiWallSearchButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uiWallSearchButtActionPerformed
+        JFrame newUserFrame = new uiSearch();
+        newUserFrame.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_uiWallSearchButtActionPerformed
+
+    private void uiWallUpdateButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uiWallUpdateButtActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_uiFri1ButtActionPerformed
-
-    private void uiPrevWallButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uiPrevWallButtActionPerformed
-        if (numUpdate>=5){
-            try {
-                numUpdate -=5;
-                ArrayList myUpdates = myAccount.getUpdates();
-                uiWall1TA = (JTextArea) myUpdates.get(numUpdate+0);
-                uiWall2TA = (JTextArea) myUpdates.get(numUpdate+1);
-                uiWall3TA = (JTextArea) myUpdates.get(numUpdate+2);
-                uiWall4TA = (JTextArea) myUpdates.get(numUpdate+3);
-                uiWall5TA = (JTextArea) myUpdates.get(numUpdate+4);
-            } catch (RemoteException ex) {
-                Logger.getLogger(uiWall.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-        }
-            
-    }//GEN-LAST:event_uiPrevWallButtActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try {
-            ArrayList myUpdates = myAccount.getUpdates();
-            uiWall1TA = (JTextArea) myUpdates.get(0);
-            uiWall2TA = (JTextArea) myUpdates.get(1);
-            uiWall3TA = (JTextArea) myUpdates.get(2);
-            uiWall4TA = (JTextArea) myUpdates.get(3);
-            uiWall5TA = (JTextArea) myUpdates.get(4);
-            numUpdate = 0;
-            ArrayList myFriends = myAccount.getFriends();
-            String[] friendNames = new String[10];
-            
-            for (int i =0; i<10; i++){
-                UserAcctInterface friendAcct = (UserAcctInterface) myFriends.get(i);
-                Map friendInfo = friendAcct.viewProfile();
-                String friendName = (String) friendInfo.get("userName");
-                friendNames[i] = friendName;
-            }
-            uiFri1TF.setText(friendNames[0]);
-            uiFri2TF.setText(friendNames[1]);
-            uiFri3TF.setText(friendNames[2]);
-            uiFri4TF.setText(friendNames[3]);
-            uiFri5TF.setText(friendNames[4]);
-            uiFri6TF.setText(friendNames[5]);
-            uiFri7TF.setText(friendNames[6]);
-            uiFri8TF.setText(friendNames[7]);
-            uiFri9TF.setText(friendNames[8]);
-            uiFri10TF.setText(friendNames[9]);
-            numFriends = 0;
-        } catch (RemoteException ex) {
-            Logger.getLogger(uiWall.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void uiNextWallButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uiNextWallButtActionPerformed
-        
-            try {
-                
-                ArrayList myUpdates = myAccount.getUpdates();
-                if (numUpdate<=myUpdates.size()-5){
-                    numUpdate +=5;
-                    uiWall1TA = (JTextArea) myUpdates.get(numUpdate+0);
-                    uiWall2TA = (JTextArea) myUpdates.get(numUpdate+1);
-                    uiWall3TA = (JTextArea) myUpdates.get(numUpdate+2);
-                    uiWall4TA = (JTextArea) myUpdates.get(numUpdate+3);
-                    uiWall5TA = (JTextArea) myUpdates.get(numUpdate+4);
-                }
-            } catch (RemoteException ex) {
-                Logger.getLogger(uiWall.class.getName()).log(Level.SEVERE, null, ex);
-            }
-    }//GEN-LAST:event_uiNextWallButtActionPerformed
+        String selected = (String)uiFriendsJL.getSelectedValue();
+        JFrame newUserFrame = new uiCreateUpdate(selected);
+        newUserFrame.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_uiWallUpdateButtActionPerformed
 
     /**
      * @param args the command line arguments
@@ -542,50 +279,23 @@ public class uiWall extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
 
             public void run() {
-                new uiWall(null).setVisible(true);
+                new uiWall().setVisible(true);
             }
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JButton uiFri10Butt;
-    private javax.swing.JTextField uiFri10TF;
-    private javax.swing.JButton uiFri1Butt;
-    private javax.swing.JTextField uiFri1TF;
-    private javax.swing.JButton uiFri2Butt;
-    private javax.swing.JTextField uiFri2TF;
-    private javax.swing.JButton uiFri3Butt;
-    private javax.swing.JTextField uiFri3TF;
-    private javax.swing.JButton uiFri4Butt;
-    private javax.swing.JTextField uiFri4TF;
-    private javax.swing.JButton uiFri5Butt;
-    private javax.swing.JTextField uiFri5TF;
-    private javax.swing.JButton uiFri6Butt;
-    private javax.swing.JTextField uiFri6TF;
-    private javax.swing.JButton uiFri7Butt;
-    private javax.swing.JTextField uiFri7TF;
-    private javax.swing.JButton uiFri8Butt;
-    private javax.swing.JTextField uiFri8TF;
-    private javax.swing.JButton uiFri9Butt;
-    private javax.swing.JTextField uiFri9TF;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JLabel uiFriLab;
-    private javax.swing.JButton uiNextWallButt;
-    private javax.swing.JButton uiPrevWallButt;
+    private javax.swing.JList uiFriendsJL;
+    private javax.swing.JList uiPostJL;
     private javax.swing.JTextArea uiWall1TA;
-    private javax.swing.JTextArea uiWall2TA;
-    private javax.swing.JTextArea uiWall3TA;
-    private javax.swing.JTextArea uiWall4TA;
-    private javax.swing.JTextArea uiWall5TA;
     private javax.swing.JLabel uiWallLab;
     private javax.swing.JButton uiWallLogOutButt;
     private javax.swing.JButton uiWallProfButt;
     private javax.swing.JButton uiWallSearchButt;
+    private javax.swing.JButton uiWallUpdateButt;
     // End of variables declaration//GEN-END:variables
 }
